@@ -263,7 +263,7 @@ class LogDBHandler(logging.handlers.SocketHandler):
     def flush_stats(self, service):
         """Send acquired stats to logdb."""
         res = []
-        for k, v in self.stat_cache.items():
+        for k, v in list(self.stat_cache.items()):
             res.append("%s: %s" % (k, str(v)))
         if len(res) > 0:
             logmsg = "{%s}" % ", ".join(res)
@@ -312,7 +312,7 @@ class SysLogHandler(logging.handlers.SysLogHandler):
         """
         msg = self._custom_format(record)
         # Message is a string. Convert to bytes as required by RFC 5424
-        if type(msg) is unicode:
+        if type(msg) is str:
             msg = msg.encode('utf-8')
             ## this puts BOM in wrong place
             #if codecs:

@@ -83,10 +83,10 @@ class _CompatRow(psycopg2.extras.DictRow):
 
     def copy(self):
         """Return regular dict."""
-        return skytools.dbdict(self.iteritems())
+        return skytools.dbdict(iter(self.items()))
     
     def iterkeys(self):
-        return self._index.iterkeys()
+        return iter(self._index.keys())
 
     def itervalues(self):
         return list.__iter__(self)

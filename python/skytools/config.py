@@ -1,7 +1,7 @@
 
 """Nicer config class."""
 
-import os, os.path, ConfigParser, socket
+import os, os.path, configparser, socket
 
 import skytools
 
@@ -45,9 +45,9 @@ class Config(object):
         self.sane_config = sane_config
         self.override = override
         if sane_config:
-            self.cf = ConfigParser.SafeConfigParser()
+            self.cf = configparser.SafeConfigParser()
         else:
-            self.cf = ConfigParser.ConfigParser()
+            self.cf = configparser.ConfigParser()
 
         if filename is None:
             self.cf.add_section(main_section)
@@ -64,20 +64,20 @@ class Config(object):
             raise Exception("Wrong config file, no section '%s'" % self.main_section)
 
         # apply default if key not set
-        for k, v in self.defs.items():
+        for k, v in list(self.defs.items()):
             if not self.cf.has_option(self.main_section, k):
                 self.cf.set(self.main_section, k, v)
 
         # apply overrides
         if self.override:
-            for k, v in self.override.items():
+            for k, v in list(self.override.items()):
                 self.cf.set(self.main_section, k, v)
 
     def get(self, key, default=None):
         """Reads string value, if not set then default."""
         try:
             return self.cf.get(self.main_section, key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             if default == None:
                 raise Exception("Config value not set: " + key)
             return default
@@ -86,7 +86,7 @@ class Config(object):
         """Reads int value, if not set then default."""
         try:
             return self.cf.getint(self.main_section, key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             if default == None:
                 raise Exception("Config value not set: " + key)
             return default
@@ -95,7 +95,7 @@ class Config(object):
         """Reads boolean value, if not set then default."""
         try:
             return self.cf.getboolean(self.main_section, key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             if default == None:
                 raise Exception("Config value not set: " + key)
             return default
@@ -104,7 +104,7 @@ class Config(object):
         """Reads float value, if not set then default."""
         try:
             return self.cf.getfloat(self.main_section, key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             if default == None:
                 raise Exception("Config value not set: " + key)
             return default
@@ -119,7 +119,7 @@ class Config(object):
             for v in s.split(","):
                 res.append(v.strip())
             return res
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             if default == None:
                 raise Exception("Config value not set: " + key)
             return default
@@ -145,7 +145,7 @@ class Config(object):
                     v = k
                 res[k] = v
             return res
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             if default == None:
                 raise Exception("Config value not set: " + key)
             return default
@@ -173,7 +173,7 @@ class Config(object):
         """
         try:
             s = self.cf.get(self.main_section, key)
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             if default is None:
                 raise Exception("Config value not set: " + key)
             s = default
@@ -193,7 +193,7 @@ class Config(object):
         for key in keys:
             try:
                 return self.cf.get(self.main_section, key)
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 pass
 
         if default == None:

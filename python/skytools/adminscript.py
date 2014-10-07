@@ -99,8 +99,8 @@ class AdminScript(skytools.DBScript):
         fmt = fmt % tuple(widths[:-1])
         if desc:
             print(desc)
-        print(fmt % tuple(fields))
-        print(fmt % tuple([ '-' * (w - 2) for w in widths ]))
+        print((fmt % tuple(fields)))
+        print((fmt % tuple([ '-' * (w - 2) for w in widths ])))
         #print(fmt % tuple(['-'*15] * len(fields)))
         for row in rows:
             vals = []
@@ -109,7 +109,7 @@ class AdminScript(skytools.DBScript):
                 if field in fieldfmt:
                     val = fieldfmt[field](val)
                 vals.append(val)
-            print(fmt % tuple(vals))
+            print((fmt % tuple(vals)))
         print('\n')
         return 1
 

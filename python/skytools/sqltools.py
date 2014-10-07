@@ -2,7 +2,7 @@
 """Database tools."""
 
 import os
-from cStringIO import StringIO
+from io import StringIO
 import skytools
 
 try:
@@ -98,7 +98,7 @@ def get_table_pkeys(curs, tbl):
         "   AND i.indisprimary AND k.attnum > 0 AND NOT k.attisdropped"\
         " ORDER BY k.attnum"
     curs.execute(q, [oid])
-    return map(lambda x: x[0], curs.fetchall())
+    return [x[0] for x in curs.fetchall()]
 
 def get_table_columns(curs, tbl):
     """Return list of column names for table."""
@@ -108,7 +108,7 @@ def get_table_columns(curs, tbl):
         "   AND k.attnum > 0 AND NOT k.attisdropped"\
         " ORDER BY k.attnum"
     curs.execute(q, [oid])
-    return map(lambda x: x[0], curs.fetchall())
+    return [x[0] for x in curs.fetchall()]
 
 #
 # exist checks
@@ -296,7 +296,7 @@ def magic_insert(curs, tablename, data, fields = None, use_insert = 0, quoted_ta
     # decide how to process
     if hasattr(data[0], 'keys'):
         if fields == None:
-            fields = data[0].keys()
+            fields = list(data[0].keys())
         if use_insert:
             row_func = _gen_dict_insert
         else:
@@ -577,11 +577,11 @@ def mk_insert_sql(row, tbl, pkey_list = None, field_map = None):
     col_list = []
     val_list = []
     if field_map:
-        for src, dst in field_map.iteritems():
+        for src, dst in field_map.items():
             col_list.append(skytools.quote_ident(dst))
             val_list.append(skytools.quote_literal(row[src]))
     else:
-        for c, v in row.iteritems():
+        for c, v in row.items():
             col_list.append(skytools.quote_ident(c))
             val_list.append(skytools.quote_literal(v))
     col_str = ", ".join(col_list)
@@ -609,13 +609,13 @@ def mk_update_sql(row, tbl, pkey_list, field_map = None):
         whe_list.append("%s = %s" % (col, val))
 
     if field_map:
-        for src, dst in field_map.iteritems():
+        for src, dst in field_map.items():
             if src not in pkmap:
                 col = skytools.quote_ident(dst)
                 val = skytools.quote_literal(row[src])
                 set_list.append("%s = %s" % (col, val))
     else:
-        for col, val in row.iteritems():
+        for col, val in row.items():
             if col not in pkmap:
                 col = skytools.quote_ident(col)
                 val = skytools.quote_literal(val)

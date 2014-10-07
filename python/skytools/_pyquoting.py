@@ -5,7 +5,8 @@
 Here is pure Python that should match C code in _cquoting.
 """
 
-import urllib, re
+import urllib.request, urllib.parse, urllib.error, re
+import sys
 
 __all__ = [
     "quote_literal", "quote_copy", "quote_bytea_raw",
@@ -61,7 +62,7 @@ def quote_bytea_raw(s):
         return None
     if 1 and _bytea_map is None:
         _bytea_map = {}
-        for i in xrange(256):
+        for i in range(256):
             c = chr(i)
             if i < 0x20 or i >= 0x7F:
                 _bytea_map[c] = "\\%03o" % i
@@ -85,11 +86,11 @@ def db_urlencode(dict):
     """
 
     elem_list = []
-    for k, v in dict.items():
+    for k, v in list(dict.items()):
         if v is None:
-            elem = urllib.quote_plus(str(k))
+            elem = urllib.parse.quote_plus(str(k))
         else:
-            elem = urllib.quote_plus(str(k)) + '=' + urllib.quote_plus(str(v))
+            elem = urllib.parse.quote_plus(str(k)) + '=' + urllib.parse.quote_plus(str(v))
         elem_list.append(elem)
     return '&'.join(elem_list)
 
@@ -107,15 +108,15 @@ def db_urldecode(qs):
         if not elem:
             continue
         pair = elem.split('=', 1)
-        name = urllib.unquote_plus(pair[0])
+        name = urllib.parse.unquote_plus(pair[0])
 
         # keep only one instance around
-        name = intern(str(name))
+        name = sys.intern(str(name))
 
         if len(pair) == 1:
             res[name] = None
         else:
-            res[name] = urllib.unquote_plus(pair[1])
+            res[name] = urllib.parse.unquote_plus(pair[1])
     return res
 
 #

@@ -111,7 +111,7 @@ def _load_log_config(fn, defs):
     else:
         logging.config.fileConfig(fn, defs)
         root = logging.getLogger()
-        for lg in root.manager.loggerDict.values():
+        for lg in list(root.manager.loggerDict.values()):
             lg.disabled = 0
 
 def _init_log(job_name, service_name, cf, log_level, is_daemon):
@@ -315,7 +315,7 @@ class BaseScript(object):
         service = self.service_name
         if getattr(self, '__version__', None):
             service += ' version %s' % self.__version__
-        print '%s, Skytools version %s' % (service, skytools.__version__)
+        print('%s, Skytools version %s' % (service, skytools.__version__))
 
     def print_ini(self):
         """Prints out ini file from doc string of the script of default for dbscript
@@ -324,7 +324,7 @@ class BaseScript(object):
         """
 
         # current service name
-        print("[%s]\n" % self.service_name)
+        print(("[%s]\n" % self.service_name))
 
         # walk class hierarchy
         bases = [self.__class__]
@@ -360,11 +360,11 @@ class BaseScript(object):
                 print(ln)
                 k = k[1:]
                 if k in self.cf_override:
-                    print('%s = %s' % (k, self.cf_override[k]))
+                    print(('%s = %s' % (k, self.cf_override[k])))
             elif k in self.cf_override:
                 if v:
-                    print('#' + ln)
-                print('%s = %s' % (k, self.cf_override[k]))
+                    print(('#' + ln))
+                print(('%s = %s' % (k, self.cf_override[k])))
             else:
                 print(ln)
 
@@ -518,7 +518,7 @@ class BaseScript(object):
         "Send statistics to log."
 
         res = []
-        for k, v in self.stat_dict.items():
+        for k, v in list(self.stat_dict.items()):
             res.append("%s: %s" % (k, v))
 
         if len(res) == 0:
@@ -580,28 +580,28 @@ class BaseScript(object):
             if self.last_func_fail and time.time() > self.last_func_fail + self.exception_reset:
                 self.last_func_fail = None
             return r
-        except UsageError, d:
+        except UsageError as d:
             self.log.error(str(d))
             sys.exit(1)
-        except MemoryError, d:
+        except MemoryError as d:
             try: # complex logging may not succeed
                 self.log.exception("Job %s out of memory, exiting" % self.job_name)
             except MemoryError:
                 self.log.fatal("Out of memory")
             sys.exit(1)
-        except SystemExit, d:
+        except SystemExit as d:
             self.send_stats()
             if prefer_looping and self.looping and self.loop_delay > 0:
                 self.log.info("got SystemExit(%s), exiting" % str(d))
             self.reset()
             raise d
-        except KeyboardInterrupt, d:
+        except KeyboardInterrupt as d:
             self.send_stats()
             if prefer_looping and self.looping and self.loop_delay > 0:
                 self.log.info("got KeyboardInterrupt, exiting")
             self.reset()
             sys.exit(1)
-        except Exception, d:
+        except Exception as d:
             try: # this may fail too
                 self.send_stats()
             except:
@@ -622,7 +622,7 @@ class BaseScript(object):
         """Make script sleep for some amount of time."""
         try:
             time.sleep(secs)
-        except IOError, ex:
+        except IOError as ex:
             if ex.errno != errno.EINTR:
                 raise
 
@@ -799,7 +799,7 @@ class DBScript(BaseScript):
 
     def reset(self):
         "Something bad happened, reset all connections."
-        for dbc in self.db_cache.values():
+        for dbc in list(self.db_cache.values()):
             dbc.reset()
         self.db_cache = {}
         BaseScript.reset(self)
@@ -808,7 +808,7 @@ class DBScript(BaseScript):
         state = BaseScript.run_once(self)
 
         # reconnect if needed
-        for dbc in self.db_cache.values():
+        for dbc in list(self.db_cache.values()):
             dbc.refresh()
 
         return state
@@ -836,7 +836,7 @@ class DBScript(BaseScript):
     def sleep(self, secs):
         """Make script sleep for some amount of time."""
         fdlist = []
-        for dbname in self._listen_map.keys():
+        for dbname in list(self._listen_map.keys()):
             if dbname not in self.db_cache:
                 continue
             fd = self.db_cache[dbname].fileno()
@@ -855,7 +855,7 @@ class DBScript(BaseScript):
                 p.poll(int(secs * 1000))
             else:
                 select.select(fdlist, [], [], secs)
-        except select.error, d:
+        except select.error as d:
             self.log.info('wait canceled')
 
     def _exec_cmd(self, curs, sql, args, quiet = False, prefix = None):
@@ -975,7 +975,7 @@ class DBScript(BaseScript):
                 curs = dbc.get_connection(dbc.isolation_level).cursor()
                 curs.execute (stmt, args)
                 break
-            except elist, e:
+            except elist as e:
                 if not sql_retry or tried >= sql_retry_max_count or time.time() - stime >= sql_retry_max_time:
                     raise
                 self.log.info("Job %s got error on connection %s: %s" % (self.job_name, dbname, e))

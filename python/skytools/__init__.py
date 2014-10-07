@@ -141,7 +141,7 @@ _symbols = {
     'safe_utf8_decode': 'skytools.utf8:safe_utf8_decode',
 }
 
-__all__ = _symbols.keys()
+__all__ = list(_symbols.keys())
 _symbols['__version__'] = 'skytools.installer_config:package_version'
 
 if 1:
@@ -214,7 +214,7 @@ else:
             + skytools.utf8.__all__ )
     for k in __all__:
         if k not in xall:
-            print '%s missing from __all__?' % k
+            print('%s missing from __all__?' % k)
     for k in xall:
         if k not in __all__:
-            print '%s missing from top-level?' % k
+            print('%s missing from top-level?' % k)

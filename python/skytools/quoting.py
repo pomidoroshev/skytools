@@ -43,7 +43,7 @@ def quote_statement(sql, dict_or_list):
     """
     if hasattr(dict_or_list, 'items'):
         qdict = {}
-        for k, v in dict_or_list.items():
+        for k, v in list(dict_or_list.items()):
             qdict[k] = quote_literal(v)
         return sql % qdict
     else:

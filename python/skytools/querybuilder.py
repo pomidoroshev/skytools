@@ -69,17 +69,17 @@ class DList:
 
     def remove(self, obj):
         obj.next.prev = obj.prev
-        obj.prev.next = obj.next
+        obj.prev.next = obj.__next__
         obj.next = obj.prev = None
 
     def empty(self):
-        return self.next == self
+        return self.__next__ == self
 
     def pop(self):
         """Remove and return first element."""
         obj = None
         if not self.empty():
-            obj = self.next
+            obj = self.__next__
             self.remove(obj)
         return obj
 
@@ -171,7 +171,7 @@ class QueryBuilder:
             - 2: Insert $n in place of parameters.
         """
         self._arg_conf.param_type = param_type
-        tmp = map(str, self._sql_parts)
+        tmp = list(map(str, self._sql_parts))
         return "".join(tmp)
 
     def _add_expr(self, pfx, expr, params, type, required):
@@ -411,12 +411,12 @@ def run_exists(cur, sql, params = None, **kwargs):
 # fake plpy for testing
 class fake_plpy:
     def prepare(self, sql, types):
-        print "DBG: plpy.prepare(%s, %s)" % (repr(sql), repr(types))
+        print("DBG: plpy.prepare(%s, %s)" % (repr(sql), repr(types)))
         return ('PLAN', sql, types)
     def execute(self, plan, args = []):
-        print "DBG: plpy.execute(%s, %s)" % (repr(plan), repr(args))
+        print("DBG: plpy.execute(%s, %s)" % (repr(plan), repr(args)))
     def error(self, msg):
-        print "DBG: plpy.error(%s)" % repr(msg)
+        print("DBG: plpy.error(%s)" % repr(msg))
 
 # launch doctest
 if __name__ == '__main__':

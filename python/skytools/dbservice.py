@@ -95,9 +95,9 @@ def get_record_list(array):
         return []
 
     if isinstance(array, list):
-        return map(get_record, array)
+        return list(map(get_record, array))
     else:
-        return map(get_record, skytools.parse_pgarray(array))
+        return list(map(get_record, skytools.parse_pgarray(array)))
 
 def get_record_lists(tbl, field):
     """ Create dictionary of lists from given list using field as grouping criteria
@@ -112,7 +112,7 @@ def get_record_lists(tbl, field):
 def _make_record_convert(row):
     """Converts complex values."""
     d = row.copy()
-    for k, v in d.items():
+    for k, v in list(d.items()):
         if isinstance(v, list):
             d[k] = skytools.make_pgarray(v)
     return skytools.db_urlencode(d)
@@ -121,7 +121,7 @@ def make_record(row):
     """ Takes record as dict and returns it as urlencoded string.
         Used to send data out of db service layer.or to fake incoming calls
     """
-    for v in row.values():
+    for v in list(row.values()):
         if isinstance(v, list):
             return _make_record_convert(row)
     return skytools.db_urlencode(row)
@@ -263,7 +263,7 @@ class DBService:
         if len(rows) == 0:
             return None
         row = rows[0]
-        return row.values()[0]
+        return list(row.values())[0]
 
      # resultset handling
 
@@ -300,7 +300,7 @@ class DBService:
             if self._is_test and len(rows) > 0:
                 results.append([res_name, res_count, res_name])
                 n = 1
-                for trow in render_table(rows, rows[0].keys()):
+                for trow in render_table(rows, list(rows[0].keys())):
                     results.append([res_name, n, trow])
                     n += 1
             else:
@@ -328,7 +328,7 @@ class DBService:
         for field in fields:
             params[self.FIELD] = field
             if field in record:
-                if record[field] is None or (isinstance(record[field], basestring) and len(record[field]) == 0):
+                if record[field] is None or (isinstance(record[field], str) and len(record[field]) == 0):
                     self.tell_user(severity, "dbsXXXX", "Required value missing: {%s}.{%s}" % (self.PARAM, self.FIELD), **params)
                     missing.append(field)
             else:
@@ -370,10 +370,10 @@ class TableAPI:
         if not self._logging:
             return
         changes = []
-        for key in result.keys():
+        for key in list(result.keys()):
             if self._op == 'update':
                 if key in original:
-                    if str(original[key]) <> str(result[key]):
+                    if str(original[key]) != str(result[key]):
                         changes.append( key + ": " + str(original[key]) + " -> " + str(result[key]) )
             else:
                 changes.append( key + ": " + str(result[key]) )
@@ -393,7 +393,7 @@ class TableAPI:
     def _insert(self, data):
         fields = []
         values = []
-        for key in data.keys():
+        for key in list(data.keys()):
             if data[key] is not None:       # ignore empty
                 fields.append(skytools.quote_ident(key))
                 values.append("{" + key + "}")
@@ -407,7 +407,7 @@ class TableAPI:
         original = self._ctx.run_query_row( sql, data )
         self._version_check( original, version )
         pairs = []
-        for key in data.keys():
+        for key in list(data.keys()):
             if data[key] is None:
                 pairs.append( key + " = NULL" )
             else:

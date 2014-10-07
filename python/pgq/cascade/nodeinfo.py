@@ -137,11 +137,11 @@ class NodeInfo:
             txt += ", NOT UPTODATE"
         lst.append(txt)
 
-        for k, v in self.node_attrs.items():
+        for k, v in list(self.node_attrs.items()):
             txt = "Attr: %s=%s" % (k, v)
             lst.append(txt)
 
-        for cname, row in self.cascaded_consumer_map.items():
+        for cname, row in list(self.cascaded_consumer_map.items()):
             err = row['cur_error']
             if err:
                 # show only first line
@@ -224,7 +224,7 @@ class QueueInfo:
         """Print ascii-tree for set.
         Expects that data for all nodes is filled in."""
 
-        print('Queue: %s   Local node: %s' % (self.queue_name, self.local_node.name))
+        print(('Queue: %s   Local node: %s' % (self.queue_name, self.local_node.name)))
         print('')
 
         root_list = self._prepare_tree()
@@ -232,15 +232,15 @@ class QueueInfo:
             self._tree_calc(root)
             datalines = self._print_node(root, '', [])
             for ln in datalines:
-                print(self._DATAFMT % (' ', ln))
+                print((self._DATAFMT % (' ', ln)))
 
     def _print_node(self, node, pfx, datalines):
         # print a tree fragment for node and info
         # returns list of unprinted data rows
         for ln in datalines:
-            print(self._DATAFMT % (_setpfx(pfx, '|'), ln))
+            print((self._DATAFMT % (_setpfx(pfx, '|'), ln)))
         datalines = node.get_infolines()
-        print("%s%s" % (_setpfx(pfx, '+--: '), node.get_title()))
+        print(("%s%s" % (_setpfx(pfx, '+--: '), node.get_title())))
 
         for i, n in enumerate(node.child_list):
             sfx = ((i < len(node.child_list) - 1) and '  |' or '   ')
@@ -252,14 +252,14 @@ class QueueInfo:
         # reset vars, fill parent and child_list for each node
         # returns list of root nodes (mostly 1)
 
-        for node in self.node_map.values():
+        for node in list(self.node_map.values()):
             node.total_childs = 0
             node.levels = 0
             node.child_list = []
             node.parent = None
 
         root_list = []
-        for node in self.node_map.values():
+        for node in list(self.node_map.values()):
             if node.provider_node \
                     and node.provider_node != node.name \
                     and node.provider_node in self.node_map:

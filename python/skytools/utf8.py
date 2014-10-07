@@ -22,7 +22,7 @@ import re, codecs
 __all__ = ['safe_utf8_decode']
 
 # by default, use same symbol as 'replace'
-REPLACEMENT_SYMBOL = unichr(0xFFFD)
+REPLACEMENT_SYMBOL = chr(0xFFFD)
 
 def _fix_utf8(m):
     """Merge UTF16 surrogates, replace others"""
@@ -32,7 +32,7 @@ def _fix_utf8(m):
         c1 = ord(u[0])
         c2 = ord(u[1])
         c = 0x10000 + ((c1 & 0x3FF) << 10) + (c2 & 0x3FF)
-        return unichr(c)
+        return chr(c)
     else:
         # use replacement symbol
         return REPLACEMENT_SYMBOL
@@ -43,11 +43,11 @@ def sanitize_unicode(u):
     """Fix invalid symbols in unicode string."""
     global _urc
 
-    assert isinstance(u, unicode)
+    assert isinstance(u, str)
 
     # regex for finding invalid chars, works on unicode string
     if not _urc:
-        rx = u"[\uD800-\uDBFF] [\uDC00-\uDFFF]? | [\0\uDC00-\uDFFF]"
+        rx = "[\uD800-\uDBFF] [\uDC00-\uDFFF]? | [\0\uDC00-\uDFFF]"
         _urc = re.compile(rx, re.X)
 
     # now find and fix UTF16 surrogates
@@ -69,7 +69,7 @@ def safe_replace(exc):
     # we could assume latin1
     if 0:
         c1 = exc.object[exc.start]
-        c2 = unichr(ord(c1))
+        c2 = chr(ord(c1))
 
     return c2, exc.start + 1
 

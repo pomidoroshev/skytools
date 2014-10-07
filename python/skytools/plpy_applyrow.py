@@ -90,7 +90,7 @@ def applyrow(tblname, ev_type, new_row,
 
     if ev_type.find('}') >= 0:
         raise DataError('Really suspicious activity')
-    if ",".join(fields.keys()).find('}') >= 0:
+    if ",".join(list(fields.keys())).find('}') >= 0:
         raise DataError('Really suspicious activity 2')
 
     # generate pkey expressions

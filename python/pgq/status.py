@@ -31,7 +31,7 @@ class PGQStatus(skytools.DBScript):
         pgver = cx.fetchone()[0]
         cx.execute("select pgq.version()")
         qver = cx.fetchone()[0]
-        print("Postgres version: %s   PgQ version: %s" % (pgver, qver))
+        print(("Postgres version: %s   PgQ version: %s" % (pgver, qver)))
 
         q = """select f.queue_name, f.queue_ntables, %s, %s,
                       %s, %s, q.queue_ticker_max_count,
@@ -54,40 +54,40 @@ class PGQStatus(skytools.DBScript):
         cx.execute(q)
         consumer_rows = cx.fetchall()
 
-        print("\n%-33s %9s %13s %6s %6s %5s" % ('Event queue',
-                            'Rotation', 'Ticker', 'TLag', 'EPS', 'New'))
-        print('-' * 78)
+        print(("\n%-33s %9s %13s %6s %6s %5s" % ('Event queue',
+                            'Rotation', 'Ticker', 'TLag', 'EPS', 'New')))
+        print(('-' * 78))
         for ev_row in event_rows:
             tck = "%s/%s/%s" % (ev_row['queue_ticker_max_count'],
                     ev_row['queue_ticker_max_lag'],
                     ev_row['queue_ticker_idle_period'])
             rot = "%s/%s" % (ev_row['queue_ntables'], ev_row['queue_rotation_period'])
-            print("%-33s %9s %13s %6s %6.1f %5d" % (
+            print(("%-33s %9s %13s %6s %6.1f %5d" % (
                 ev_row['queue_name'],
                 rot,
                 tck,
                 ev_row['ticker_lag'],
                 ev_row['ev_per_sec'],
                 ev_row['ev_new'],
-            ))
-        print('-' * 78)
-        print("\n%-48s %9s %9s %8s" % (
-                'Consumer', 'Lag', 'LastSeen', 'Pending'))
-        print('-' * 78)
+            )))
+        print(('-' * 78))
+        print(("\n%-48s %9s %9s %8s" % (
+                'Consumer', 'Lag', 'LastSeen', 'Pending')))
+        print(('-' * 78))
         for ev_row in event_rows:
             cons = self.pick_consumers(ev_row, consumer_rows)
             self.show_queue(ev_row, cons)
-        print('-' * 78)
+        print(('-' * 78))
         db.commit()
 
     def show_consumer(self, cons):
-        print("  %-46s %9s %9s %8d" % (
+        print(("  %-46s %9s %9s %8d" % (
                     cons['consumer_name'],
                     cons['lag'], cons['last_seen'],
-                    cons['pending_events']))
+                    cons['pending_events'])))
 
     def show_queue(self, ev_row, consumer_rows):
-        print("%(queue_name)s:" % ev_row)
+        print(("%(queue_name)s:" % ev_row))
         for cons in consumer_rows:
             self.show_consumer(cons)
 
